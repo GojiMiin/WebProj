@@ -55,18 +55,18 @@ exports.getInformation = function (req, res) {
             PaymentID: payID,
             PayDate: req.body.PayDate,
             PayTotal: req.body.PayTotal,
-            Bank: req.body.Bank
-            /* PaymentImg: img  */
+            Bank: req.body.Bank/* ,
+            PaymentImg: img  */
         };
         res.json(data)
         pay.create(data, function (err, res) {
             if (err) throw err
             console.log('success')
-        }) 
+        })
     })
 
 }
 
-exports.hi = function (req, res) {
-    res.end("Hiii")
+exports.bookList = function (req, res) {
+    console.log(req.body)
 }
