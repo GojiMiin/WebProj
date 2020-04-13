@@ -68,5 +68,12 @@ exports.getInformation = function (req, res) {
 }
 
 exports.bookList = function (req, res) {
-    console.log(req.body)
+    var want= {
+        username : req.params.username
+    }
+    users.findOne(want, function(err, user){
+        if(err) throw err
+        console.log(user.BookID)
+        res.send(user.BookID)
+    })
 }
