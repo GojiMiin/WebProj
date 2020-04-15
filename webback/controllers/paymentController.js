@@ -4,7 +4,9 @@ var fs = require('fs');
 var body = require('body-parser')
 var users = require('../models/UserModel');
 var pay = require('../models/paymentModel');
+var book = require('../models/bookModel');
 app.use(body())
+
 
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -30,7 +32,7 @@ exports.sendList = function (req, res) {
 }
 
 exports.getInformation = function (req, res) {
-    var payID = ''
+    let payID = ''
     pay.countDocuments(function (err, count) {
         /* upload.single('picture') */
         /* var img = fs.readFileSync( req.file.path )
@@ -67,13 +69,33 @@ exports.getInformation = function (req, res) {
 
 }
 
-exports.bookList = function (req, res) {
-    var want= {
+
+exports.frontInformation = async function (req, res) {
+    let allPrice = []
+    let want= {
         username : req.params.username
     }
-    users.findOne(want, function(err, user){
-        if(err) throw err
-        console.log(user.BookID)
-        res.send(user.BookID)
-    })
+    let send = {
+        thisBookID : Object,
+        thisPrice : Object
+    }
+
+    let userRaw = await users.findOne(want)
+    let allBookID = userRaw.BookID.split(",")
+    //console.log(allBookID.split(","))
+    
+    for(let i in allBookID){
+        let eachID = {
+            BookID : allBookID[i]
+        }
+        let IDPrice = await book.findOne(eachID)
+        allPrice.push(IDPrice.Price) 
+    }
+
+    send.thisBookID = allBookID
+    send.thisPrice = allPrice
+    console.log(send)
+    res.send(send)
+    
+
 }

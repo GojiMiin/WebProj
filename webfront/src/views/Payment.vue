@@ -82,10 +82,9 @@ export default {
     axios
       .get("http://localhost:3000/Payment/" + this.$route.params.username)
       .then(response => {
-        /* alert(typeof(this.data.BookID.items)) */
-        var list = response.data.split(",");
-        this.data.BookID.items = list
-        alert(list);
+        let BookIDlist = response.data.thisBookID;
+        this.data.BookID.items = BookIDlist
+        alert(BookIDlist);
       })
       .catch(error => {
         console.log(error);
