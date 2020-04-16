@@ -6,6 +6,7 @@ var paySchema = new Schema({
     PayDate: Date,
     PayTotal: Number,
     Bank: String,
+    BookID: String
     //PaymentImg: Buffer
 });
 

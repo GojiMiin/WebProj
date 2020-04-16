@@ -31,42 +31,31 @@ exports.sendList = function (req, res) {
     })
 }
 
-exports.getInformation = function (req, res) {
+exports.getInformation = async function (req, res) {
     let payID = ''
-    pay.countDocuments(function (err, count) {
-        /* upload.single('picture') */
-        /* var img = fs.readFileSync( req.file.path )
-        var encode_image = img.toString('base64')
-        var img = new Buffer(encode_image, 'base64') */
+    let count = await pay.countDocuments()
 
-        //generate PaymentID
-        if (err) throw err
-        if (count == 0) {
-            payID = 'P0001'
-            console.log(payID)
-        } else {
-            count += 1
-            myID = '' + count
-            while (myID.length < 4) {
-                myID = '0' + myID
-            }
-            payID = 'P' + myID
+    if (count == 0) {
+        payID = 'P0001'
+    } else {
+        count += 1
+        myID = '' + count
+        while (myID.length < 4) {
+            myID = '0' + myID
         }
-        console.log(req.body)
-        var data = {
-            PaymentID: payID,
-            PayDate: req.body.PayDate,
-            PayTotal: req.body.PayTotal,
-            Bank: req.body.Bank/* ,
-            PaymentImg: img  */
-        };
-        res.json(data)
-        pay.create(data, function (err, res) {
-            if (err) throw err
-            console.log('success')
-        })
-    })
-
+        payID = 'P' + myID
+    }
+    let data = {
+        PaymentID: payID,
+        PayDate: req.body.PayDate,
+        PayTotal: req.body.PayTotal,
+        Bank: req.body.Bank,
+        BookID: req.body.BookID/*,
+        PaymentImg: img  */
+    };
+    res.json(data)
+    await pay.create(data)
+    
 }
 
 
@@ -94,7 +83,6 @@ exports.frontInformation = async function (req, res) {
 
     send.thisBookID = allBookID
     send.thisPrice = allPrice
-    console.log(send)
     res.send(send)
     
 
