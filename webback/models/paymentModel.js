@@ -6,8 +6,8 @@ var paySchema = new Schema({
     PayDate: Date,
     PayTotal: Number,
     Bank: String,
-    BookID: String
-    //PaymentImg: Buffer
+    BookID: String,
+    PaymentImg: Object
 });
 
 module.exports = mongoose.model('pay', paySchema, 'Payment')

@@ -2,10 +2,7 @@ var mongoose = require('mongoose')
 var Schema = mongoose.Schema;
 
 var bookSchema = new Schema({
-    BookID: {
-        type: String,
-        ref: "Users"
-    },
+    BookID: String,
     BookDate: Date,
     Checkin: Date,
     Checkout: Date,

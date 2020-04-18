@@ -1,9 +1,8 @@
 <template>
   <div class="container">
     <br /><br />
-    <form>
+    <form enctype="multipart/form-data">
       <label for="book-id">Payment List</label><br />
-      <!-- cannot show name on dropdownlist -->
       <select
         class="payForm_input"
         id="dropdown"
@@ -37,8 +36,8 @@
         name="Bank"
         v-model="data.payData.Bank"
       /><br /><br />
-      <input type="file" name="picture" accept="image/*" />
-
+      <input type="file" accept="image/*" @change="getPhoto($event)" />
+      <button class="Check_value" @click="check()">Check Photo Value</button>
       <button class="payForm_button" type="submit" @click="sentData()">
         submit
       </button>
@@ -67,22 +66,34 @@ export default {
           BookID: "",
           PayDate: "",
           PayTotal: "",
-          Bank: ""
+          Bank: "",
+          Receipt: ""
         }
       }
     };
   },
   methods: {
     sentData: function() {
+      let formdata = new FormData();
+      /* formdata.append('BookID',this.data.currentShow.BookID)
+      formdata.append('PayDate',this.data.payData.PayDate)
+      formdata.append('PayTotal',this.data.currentShow.Price)
+      formdata.append('Bank',this.data.payData.Bank) */
+      formdata.append('Receipt',this.data.payData.Receipt)
+      /* for(let i of formdata.values()){
+        console.log(i)
+      }
+      alert('ready')
+ */
       let myPay = {
         BookID: this.data.currentShow.BookID,
         PayDate: this.data.payData.PayDate,
         PayTotal: this.data.currentShow.Price,
-        Bank: this.data.payData.Bank
+        Bank: this.data.payData.Bank,
       };
-      alert(myPay);
+
       axios
-        .post("http://localhost:3000/Payment/:username", myPay)
+        .post("http://localhost:3000/Payment/:username", formdata)
         .then(response => {
           console.log(response);
         })
@@ -95,6 +106,32 @@ export default {
       let IDindex = document.getElementById("dropdown").selectedIndex;
       this.data.currentShow.BookID = this.data.BookID.allBookID[IDindex];
       this.data.currentShow.Price = this.data.BookID.allPrice[IDindex];
+    },
+    //function to get photo
+    getPhoto: async function(event) {
+      /* let fileInput = document.querySelector("input[type=file]");
+      let reader = new FileReader();
+      
+      new Promise((reslove, reject) => {
+        reader.onload = (e) => {
+          reslove(e)
+        }
+        reader.onerror = (err) =>{
+          reject(err)
+        }
+        reader.readAsDataURL(fileInput.files[0]);
+      }).then((value) => {
+        let raw = value.target.result
+        let clean = raw.split(",")// delete data:image/jpeg;base64,
+        this.data.payData.Receipt = clean[1]
+      }) */
+ 
+      let file = event.target.files[0];
+      this.data.payData.Receipt = file;
+    },
+    check: function() {
+      console.log(this.data.payData.Receipt);
+      alert(typeof this.data.payData.Receipt);
     }
   },
   mounted() {
@@ -103,8 +140,8 @@ export default {
       .then(response => {
         this.data.BookID.allBookID = response.data.thisBookID;
         this.data.BookID.allPrice = response.data.thisPrice;
-        this.data.currentShow.BookID = this.data.BookID.allBookID[0]
-        this.data.currentShow.Price = this.data.BookID.allPrice[0]
+        this.data.currentShow.BookID = this.data.BookID.allBookID[0];
+        this.data.currentShow.Price = this.data.BookID.allPrice[0];
       })
       .catch(error => {
         console.log(error);
