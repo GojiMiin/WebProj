@@ -75,25 +75,25 @@ export default {
   methods: {
     sentData: function() {
       let formdata = new FormData();
-      /* formdata.append('BookID',this.data.currentShow.BookID)
+      formdata.append('BookID',this.data.currentShow.BookID)
       formdata.append('PayDate',this.data.payData.PayDate)
       formdata.append('PayTotal',this.data.currentShow.Price)
-      formdata.append('Bank',this.data.payData.Bank) */
+      formdata.append('Bank',this.data.payData.Bank)
       formdata.append('Receipt',this.data.payData.Receipt)
-      /* for(let i of formdata.values()){
+      for(let i of formdata.values()){
         console.log(i)
       }
       alert('ready')
- */
-      let myPay = {
+ 
+      /* let myPay = {
         BookID: this.data.currentShow.BookID,
         PayDate: this.data.payData.PayDate,
         PayTotal: this.data.currentShow.Price,
         Bank: this.data.payData.Bank,
-      };
+      }; */
 
       axios
-        .post("http://localhost:3000/Payment/:username", formdata)
+        .post("http://localhost:3000/Payment/"+ this.$route.params.username , formdata)
         .then(response => {
           console.log(response);
         })

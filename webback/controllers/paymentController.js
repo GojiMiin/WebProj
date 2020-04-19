@@ -3,6 +3,8 @@ var mongoose = require('mongoose');
 var multer = require('multer');
 var fs = require('fs');
 var body = require('body-parser')
+var formidable = require('formidable');
+var path = require('path');
 var app = express();
 var users = require('../models/UserModel');
 var pay = require('../models/paymentModel');
@@ -34,9 +36,20 @@ exports.sendList = function (req, res) {
     })
 }
 
-exports.getInformation = upload.single("Receipt"), async function (req, res, next) {
+exports.getInformation = /* upload.single("Receipt"), */ async function (req, res) {
 
-    let payID = ''
+    var form = new formidable.IncomingForm();
+    //make async form.parse
+    form.parse(req, (err, fields, files) => {
+        if (err) {
+          next(err);
+          return;
+        }
+        res.json({ fields, files });
+    });
+
+
+    /* let payID = ''
     let count = await pay.countDocuments()
     if (count == 0) {
         payID = 'P0001'
@@ -49,8 +62,6 @@ exports.getInformation = upload.single("Receipt"), async function (req, res, nex
         payID = 'P' + myID
     }
 
-    let detail = multer.any()
-    console.log(detail)
     let data = {
         PaymentID: payID,
         PayDate: req.body.PayDate,
@@ -58,9 +69,7 @@ exports.getInformation = upload.single("Receipt"), async function (req, res, nex
         Bank: req.body.Bank,
         BookID: req.body.BookID
     };
-
-    console.log(req.body)
-    //await pay.create(data)
+    await pay.create(data) */
     
 }
 
@@ -92,3 +101,4 @@ exports.frontInformation = async function (req, res) {
     
 
 }
+
