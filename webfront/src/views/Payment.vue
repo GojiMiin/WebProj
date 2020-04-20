@@ -84,13 +84,6 @@ export default {
         console.log(i)
       }
       alert('ready')
- 
-      /* let myPay = {
-        BookID: this.data.currentShow.BookID,
-        PayDate: this.data.payData.PayDate,
-        PayTotal: this.data.currentShow.Price,
-        Bank: this.data.payData.Bank,
-      }; */
 
       axios
         .post("http://localhost:3000/Payment/"+ this.$route.params.username , formdata)
@@ -109,23 +102,7 @@ export default {
     },
     //function to get photo
     getPhoto: async function(event) {
-      /* let fileInput = document.querySelector("input[type=file]");
-      let reader = new FileReader();
       
-      new Promise((reslove, reject) => {
-        reader.onload = (e) => {
-          reslove(e)
-        }
-        reader.onerror = (err) =>{
-          reject(err)
-        }
-        reader.readAsDataURL(fileInput.files[0]);
-      }).then((value) => {
-        let raw = value.target.result
-        let clean = raw.split(",")// delete data:image/jpeg;base64,
-        this.data.payData.Receipt = clean[1]
-      }) */
- 
       let file = event.target.files[0];
       this.data.payData.Receipt = file;
     },

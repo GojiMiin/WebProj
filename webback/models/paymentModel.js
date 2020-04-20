@@ -3,11 +3,13 @@ var Schema = mongoose.Schema;
 
 var paySchema = new Schema({
     PaymentID: String,
-    PayDate: Date,
+    PayDate: String,
     PayTotal: Number,
     Bank: String,
+    PaymentStatus: "",
+    PaymentImg: String,
     BookID: String,
-    PaymentImg: Object
+    username: String
 });
 
 module.exports = mongoose.model('pay', paySchema, 'Payment')
