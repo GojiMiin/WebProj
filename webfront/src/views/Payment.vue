@@ -1,9 +1,8 @@
 <template>
   <div class="container">
     <br /><br />
-    <form>
+    <form enctype="multipart/form-data">
       <label for="book-id">Payment List</label><br />
-      <!-- cannot show name on dropdownlist -->
       <select
         class="payForm_input"
         id="dropdown"
@@ -29,17 +28,23 @@
         name="PayTotal"
         v-bind:value="this.data.currentShow.Price"
         readonly
-      /><br /><br />
+      />
+      <br /><br />
       <label for="Bank">Bank</label><br />
       <input
         class="form-control"
         type="text"
         name="Bank"
         v-model="data.payData.Bank"
-      /><br /><br />
-      <input type="file" name="picture" accept="image/*" />
-
-      <button class="payForm_button" type="submit" @click="sentData()">
+      />
+      <br /><br />
+      <input type="file" accept="image/*" @change="getPhoto($event)" />
+      <button
+        class="payForm_button"
+        :disabled="!isComplete"
+        type="submit"
+        @click="sentData()"
+      >
         submit
       </button>
       <p>{{ data.BookID.username }}</p>
@@ -49,6 +54,7 @@
 
 <script>
 import axios from "axios";
+
 export default {
   name: "PayMe",
   data() {
@@ -67,22 +73,31 @@ export default {
           BookID: "",
           PayDate: "",
           PayTotal: "",
-          Bank: ""
+          Bank: "",
+          Receipt: ""
         }
       }
     };
   },
   methods: {
     sentData: function() {
-      let myPay = {
-        BookID: this.data.currentShow.BookID,
-        PayDate: this.data.payData.PayDate,
-        PayTotal: this.data.currentShow.Price,
-        Bank: this.data.payData.Bank
-      };
-      alert(myPay);
+      let datestr = new Date(this.data.payData.PayDate).toUTCString();
+      let formdata = new FormData();
+      formdata.append("BookID", this.data.currentShow.BookID);
+      formdata.append("PayDate", datestr);
+      formdata.append("PayTotal", this.data.currentShow.Price);
+      formdata.append("Bank", this.data.payData.Bank);
+      formdata.append("Receipt", this.data.payData.Receipt);
+      for (let i of formdata.values()) {
+        console.log(i);
+      }
+      alert("ready");
+
       axios
-        .post("http://localhost:3000/Payment/:username", myPay)
+        .post(
+          "http://localhost:3000/Payment/" + this.$route.params.username,
+          formdata
+        )
         .then(response => {
           console.log(response);
         })
@@ -95,6 +110,20 @@ export default {
       let IDindex = document.getElementById("dropdown").selectedIndex;
       this.data.currentShow.BookID = this.data.BookID.allBookID[IDindex];
       this.data.currentShow.Price = this.data.BookID.allPrice[IDindex];
+    },
+    //function to get photo
+    getPhoto: async function(event) {
+      let file = event.target.files[0];
+      this.data.payData.Receipt = file;
+    }
+  },
+  computed: {
+    //disable button if input is blank
+    isComplete: function() {
+      let date = this.data.payData.PayDate;
+      let bank = this.data.payData.Bank;
+      let photo = this.data.payData.Receipt;
+      return date && bank && photo;
     }
   },
   mounted() {
@@ -103,8 +132,8 @@ export default {
       .then(response => {
         this.data.BookID.allBookID = response.data.thisBookID;
         this.data.BookID.allPrice = response.data.thisPrice;
-        this.data.currentShow.BookID = this.data.BookID.allBookID[0]
-        this.data.currentShow.Price = this.data.BookID.allPrice[0]
+        this.data.currentShow.BookID = this.data.BookID.allBookID[0];
+        this.data.currentShow.Price = this.data.BookID.allPrice[0];
       })
       .catch(error => {
         console.log(error);

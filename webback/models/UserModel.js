@@ -6,10 +6,8 @@ var userSchema = new Schema({
     password: String,
     role: String,
     memberID: String,
-    BookID:{
-        type: String,
-        ref: "Book"
-    }
+    BookID: String,
+
 });
 
 module.exports = mongoose.model('user', userSchema, 'Users')
