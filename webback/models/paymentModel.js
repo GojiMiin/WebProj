@@ -3,7 +3,7 @@ var Schema = mongoose.Schema;
 
 var paySchema = new Schema({
     PaymentID: String,
-    PayDate: String,
+    PayDate: Date,
     PayTotal: Number,
     Bank: String,
     PaymentStatus: "",

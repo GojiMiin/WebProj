@@ -86,7 +86,8 @@ exports.getInformation = function (req, res) {
 }
 
 exports.frontInformation = async function (req, res) {
-    let allPrice = []
+    let readyToSendPrice = []
+    let readyToSendID = []
     let want= {
         username : req.params.username
     }
@@ -97,19 +98,22 @@ exports.frontInformation = async function (req, res) {
 
     let userRaw = await users.findOne(want)
     let allBookID = userRaw.BookID.split(",")
-    
+
     for(let i in allBookID){
         let eachID = {
             BookID : allBookID[i]
         }
-        let IDPrice = await book.findOne(eachID)
-        allPrice.push(IDPrice.Price) 
+        //find which BookID is already pay 
+        let notPay = await pay.findOne(eachID)
+        if(notPay == null){
+            let IDPrice = await book.findOne(eachID)
+            console.log(IDPrice)
+            readyToSendID.push(eachID.BookID)
+            readyToSendPrice.push(IDPrice.Price)
+        }
     }
-
-    send.thisBookID = allBookID
-    send.thisPrice = allPrice
+    send.thisBookID = readyToSendID
+    send.thisPrice = readyToSendPrice
     res.send(send)
-    
-
 }
 

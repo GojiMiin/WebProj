@@ -28,17 +28,23 @@
         name="PayTotal"
         v-bind:value="this.data.currentShow.Price"
         readonly
-      /><br /><br />
+      />
+      <br /><br />
       <label for="Bank">Bank</label><br />
       <input
         class="form-control"
         type="text"
         name="Bank"
         v-model="data.payData.Bank"
-      /><br /><br />
+      />
+      <br /><br />
       <input type="file" accept="image/*" @change="getPhoto($event)" />
-      <button class="Check_value" @click="check()">Check Photo Value</button>
-      <button class="payForm_button" type="submit" @click="sentData()">
+      <button
+        class="payForm_button"
+        :disabled="!isComplete"
+        type="submit"
+        @click="sentData()"
+      >
         submit
       </button>
       <p>{{ data.BookID.username }}</p>
@@ -48,6 +54,7 @@
 
 <script>
 import axios from "axios";
+
 export default {
   name: "PayMe",
   data() {
@@ -74,19 +81,23 @@ export default {
   },
   methods: {
     sentData: function() {
+      let datestr = new Date(this.data.payData.PayDate).toUTCString();
       let formdata = new FormData();
-      formdata.append('BookID',this.data.currentShow.BookID)
-      formdata.append('PayDate',this.data.payData.PayDate)
-      formdata.append('PayTotal',this.data.currentShow.Price)
-      formdata.append('Bank',this.data.payData.Bank)
-      formdata.append('Receipt',this.data.payData.Receipt)
-      for(let i of formdata.values()){
-        console.log(i)
+      formdata.append("BookID", this.data.currentShow.BookID);
+      formdata.append("PayDate", datestr);
+      formdata.append("PayTotal", this.data.currentShow.Price);
+      formdata.append("Bank", this.data.payData.Bank);
+      formdata.append("Receipt", this.data.payData.Receipt);
+      for (let i of formdata.values()) {
+        console.log(i);
       }
-      alert('ready')
+      alert("ready");
 
       axios
-        .post("http://localhost:3000/Payment/"+ this.$route.params.username , formdata)
+        .post(
+          "http://localhost:3000/Payment/" + this.$route.params.username,
+          formdata
+        )
         .then(response => {
           console.log(response);
         })
@@ -102,13 +113,17 @@ export default {
     },
     //function to get photo
     getPhoto: async function(event) {
-      
       let file = event.target.files[0];
       this.data.payData.Receipt = file;
-    },
-    check: function() {
-      console.log(this.data.payData.Receipt);
-      alert(typeof this.data.payData.Receipt);
+    }
+  },
+  computed: {
+    //disable button if input is blank
+    isComplete: function() {
+      let date = this.data.payData.PayDate;
+      let bank = this.data.payData.Bank;
+      let photo = this.data.payData.Receipt;
+      return date && bank && photo;
     }
   },
   mounted() {
