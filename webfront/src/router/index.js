@@ -2,8 +2,16 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 import Home from "../views/Home.vue";
 import Payment from "../views/Payment.vue";
+import { ValidationProvider, ValidationObserver, extend } from "vee-validate";
+import * as rules from "vee-validate/dist/rules";
 
+Vue.component("ValidationObserver", ValidationObserver);
+Vue.component("ValidationProvider", ValidationProvider);
 Vue.use(VueRouter);
+
+Object.keys(rules).forEach(rule => {
+  extend(rule, rules[rule]);
+});
 
 const routes = [
   {

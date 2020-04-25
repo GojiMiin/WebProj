@@ -1,54 +1,65 @@
 <template>
   <div class="container">
     <br /><br />
-    <form enctype="multipart/form-data">
-      <label for="book-id">Payment List</label><br />
-      <select
-        class="payForm_input"
-        id="dropdown"
-        name="book-id"
-        @change="dropDownChange()"
-      >
-        <option v-for="item in data.BookID.allBookID" v-bind:key="item">
-          {{ item }}
-        </option> </select
-      ><br /><br />
 
-      <label for="PayDate">PayDate</label><br />
-      <input
-        class="form-control"
-        type="date"
-        name="PayDate"
-        v-model="data.payData.PayDate"
-      /><br /><br />
-      <label for="PayTotal">PayTotal</label><br />
-      <input
-        class="form-control"
-        type="text"
-        name="PayTotal"
-        v-bind:value="this.data.currentShow.Price"
-        readonly
-      />
-      <br /><br />
-      <label for="Bank">Bank</label><br />
-      <input
-        class="form-control"
-        type="text"
-        name="Bank"
-        v-model="data.payData.Bank"
-      />
-      <br /><br />
-      <input type="file" accept="image/*" @change="getPhoto($event)" />
-      <button
-        class="payForm_button"
-        :disabled="!isComplete"
-        type="submit"
-        @click="sentData()"
+    <ValidationObserver v-slot="{ handleSubmit }">
+      <form
+        enctype="multipart/form-data"
+        @submit.prevent="handleSubmit(onSubmit)"
       >
-        submit
-      </button>
-      <p>{{ data.BookID.username }}</p>
-    </form>
+        <label for="book-id">Payment List</label><br />
+        <select
+          class="payForm_input"
+          id="dropdown"
+          name="book-id"
+          @change="dropDownChange()"
+        >
+          <option v-for="item in data.BookID.allBookID" v-bind:key="item">
+            {{ item }}
+          </option> </select
+        ><br /><br />
+
+        <label for="PayDate">PayDate</label><br />
+        <input
+          class="form-control"
+          type="date"
+          name="PayDate"
+          v-model="data.payData.PayDate"
+        /><br /><br />
+        <label for="PayTotal">PayTotal</label><br />
+        <input
+          class="form-control"
+          type="text"
+          name="PayTotal"
+          v-bind:value="data.currentShow.Price"
+          readonly
+        />
+        <br /><br />
+        <label for="Bank">Bank</label><br />
+
+        <ValidationProvider rules="required|alpha" v-slot="{ errors }">
+          <input
+            class="form-control"
+            type="text"
+            name="Bank"
+            v-model="data.payData.Bank"
+          /><br />
+          <span v-if="errors[0]">Pls input only alphabet</span>
+        </ValidationProvider>
+
+        <br /><br />
+        <ValidationProvider rules="ext:jpg,png" v-slot="{ validate, errors }">
+          <input type="file" accept="image/*" name="ReceiptImg" @change="getPhoto($event); validate($event)" />
+          <span v-if="errors[0]">
+            <p>Please insert only .jpeg , .jpg or .png</p>
+          </span>
+        </ValidationProvider>
+        <br /><br />
+        <button class="payForm_button" :disabled="!isComplete" type="submit">
+          submit
+        </button>
+      </form>
+    </ValidationObserver>
   </div>
 </template>
 
@@ -80,7 +91,11 @@ export default {
     };
   },
   methods: {
+    onSubmit: function() {
+      this.sentData();
+    },
     sentData: function() {
+      alert("Submit Success");
       let datestr = new Date(this.data.payData.PayDate).toUTCString();
       let formdata = new FormData();
       formdata.append("BookID", this.data.currentShow.BookID);
@@ -91,7 +106,6 @@ export default {
       for (let i of formdata.values()) {
         console.log(i);
       }
-      alert("ready");
 
       axios
         .post(
@@ -112,7 +126,7 @@ export default {
       this.data.currentShow.Price = this.data.BookID.allPrice[IDindex];
     },
     //function to get photo
-    getPhoto: async function(event) {
+    getPhoto: function(event) {
       let file = event.target.files[0];
       this.data.payData.Receipt = file;
     }

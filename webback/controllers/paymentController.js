@@ -12,21 +12,6 @@ var book = require('../models/bookModel');
 
 app.use(body.json());
 
-
-var storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'uploads')
-    },
-    filename: function (req, file, cb) {
-        cb(null, file.fieldname + '-' + Date.now())
-    }
-})
-
-var upload = multer({
-    storage: storage
-})
-
-
 exports.sendList = function (req, res) {
     var items = ''
     users.findOne(req.body.usename, function (err, res) {
