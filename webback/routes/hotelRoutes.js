@@ -2,6 +2,7 @@ module.exports = function(app){
     var payment = require('../controllers/paymentController')
     var book = require('../controllers/bookController')
     var bookHistory = require('../controllers/bookingHistoryController')
+    var roomDetail = require('../controllers/roomDetailController')
     app.route('/Payment/:username')
         .post(payment.getInformation)
         .get(payment.frontInformation)
@@ -11,4 +12,6 @@ module.exports = function(app){
     app.route('/bookhistory/:username')
         .get(bookHistory.getAll)
         .delete(bookHistory.cancel)
+    app.route('/roomDetail/:type/:username')
+        .get(roomDetail.getPrice)
 }

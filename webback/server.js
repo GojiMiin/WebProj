@@ -2,7 +2,7 @@ var express = require('express');
 var cors = require('cors');
 var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
-var routes = require('./routes/paymentRoutes');
+var routes = require('./routes/hotelRoutes');
 
 var mongo_uri = "mongodb+srv://GojiMiin:342510@webproject-dfylq.mongodb.net/Hotel?retryWrites=true&w=majority";
 mongoose.Promise = global.Promise;
