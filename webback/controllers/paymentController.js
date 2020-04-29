@@ -1,6 +1,5 @@
 var express = require('express')
 var mongoose = require('mongoose');
-var multer = require('multer');
 var fs = require('fs');
 var body = require('body-parser')
 var formidable = require('formidable');
