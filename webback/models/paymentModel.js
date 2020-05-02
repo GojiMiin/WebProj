@@ -2,14 +2,28 @@ var mongoose = require('mongoose')
 var Schema = mongoose.Schema;
 
 var paySchema = new Schema({
-    PaymentID: String,
-    PayDate: Date,
-    PayTotal: Number,
-    Bank: String,
+    PaymentID: {
+        type: String
+    },
+    PayDate: {
+        type: Date
+    },
+    PayTotal: {
+        type: Number
+    },
+    Bank: {
+        type: String
+    },
     PaymentStatus: "",
-    PaymentImg: String,
-    BookID: String,
-    username: String
+    PaymentImg: {
+        type: String
+    },
+    BookID: {
+        type: String
+    },
+    username: {
+        type: String
+    }
 });
 
-module.exports = mongoose.model('pay', paySchema, 'Payment')
+module.exports = mongoose.model('Pay', paySchema, 'Payment')

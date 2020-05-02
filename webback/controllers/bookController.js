@@ -2,7 +2,7 @@ var express = require('express')
 var mongoose = require('mongoose');
 var body = require('body-parser')
 var app = express();
-var book = require('../models/bookModel');
+book = mongoose.model('Book')
 
 app.use(body.json());
 
@@ -11,12 +11,12 @@ exports.sendBooking = async function(req, res) {
     let BookID = ""
     let today = new Date();
     let date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-    let count = await book.countDocuments()
+    const count = await book.countDocuments()
         if (count == 0) {
             BookID = 'B0001'
         } else {
-            let condition = /\w+[0]/
-            let last = await book.find({}).sort({ _id: -1 }).limit(1);
+            const condition = /\w+[0]/
+            const last = await book.find({}).sort({ _id: -1 }).limit(1);
             let idWant = last[0].BookID
             //gen BookID continue from last bookID
             let OnlyNum = idWant.replace(condition, " ")
@@ -35,7 +35,7 @@ exports.sendBooking = async function(req, res) {
     await book.create(bookDetail)
 }
 
-exports.initPage = async function() {
+exports.initPage = async function(req, res) {
     //send all book data from server to front 
     let allItems = await book.find({})
     res.send(allItems)

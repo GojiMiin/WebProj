@@ -2,10 +2,18 @@ var mongoose = require('mongoose')
 var Schema = mongoose.Schema;
 
 var roomSchema = new Schema({
-    roomNum: Number,
-    RoomStatus: String,
-    RoomCondition: String,
-    TypeName: String
+    roomNum: {
+        type: Number
+    },
+    RoomStatus: {
+        type: String
+    },
+    RoomCondition: {
+        type: String
+    },
+    TypeName: {
+        type: String
+    }
 });
 
-module.exports = mongoose.model('book', roomSchema, 'Room')
+module.exports = mongoose.model('Room', roomSchema, 'Room')
