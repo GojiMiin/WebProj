@@ -1,14 +1,14 @@
 var express = require('express')
 var mongoose = require('mongoose');
-var multer = require('multer');
 var fs = require('fs');
 var body = require('body-parser')
 var formidable = require('formidable');
 var path = require('path');
 var app = express();
-var users = require('../models/UserModel');
-var pay = require('../models/paymentModel');
-var book = require('../models/bookModel');
+users = mongoose.model('Users')
+pay = mongoose.model('Pay')
+book = mongoose.model('Book')
+
 
 app.use(body.json());
 
@@ -74,7 +74,7 @@ exports.frontInformation = async function (req, res) {
     let readyToSendPrice = []
     let readyToSendID = []
     let want= {
-        username : req.params.username
+        username : req.user.username
     }
     let send = {
         thisBookID : Object,
@@ -91,7 +91,7 @@ exports.frontInformation = async function (req, res) {
         //find which BookID is already pay 
         let notPay = await pay.findOne(eachID)
         if(notPay == null){
-            let IDPrice = await book.findOne(eachID)
+            const IDPrice = await book.findOne(eachID)
             console.log(IDPrice)
             readyToSendID.push(eachID.BookID)
             readyToSendPrice.push(IDPrice.Price)

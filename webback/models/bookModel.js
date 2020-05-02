@@ -2,12 +2,24 @@ var mongoose = require('mongoose')
 var Schema = mongoose.Schema;
 
 var bookSchema = new Schema({
-    BookID: String,
-    BookDate: Date,
-    Checkin: Date,
-    Checkout: Date,
-    Price: Number,
-    roomNum: Number
+    BookID: {
+        type: String
+    },
+    BookDate: {
+        type: Date
+    },
+    Checkin: {
+        type: Date
+    },
+    Checkout: {
+        type: Date
+    },
+    Price: {
+        type: Number
+    },
+    roomNum: {
+        type: Number
+    },
 })
 
 module.exports = mongoose.model('Book', bookSchema, 'Book')
