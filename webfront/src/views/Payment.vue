@@ -49,7 +49,15 @@
 
         <br /><br />
         <ValidationProvider rules="ext:jpg,png" v-slot="{ validate, errors }">
-          <input type="file" accept="image/*" name="ReceiptImg" @change="getPhoto($event); validate($event)" />
+          <input
+            type="file"
+            accept="image/*"
+            name="ReceiptImg"
+            @change="
+              getPhoto($event);
+              validate($event);
+            "
+          />
           <span v-if="errors[0]">
             <p>Please insert only .jpeg , .jpg or .png</p>
           </span>
@@ -109,8 +117,14 @@ export default {
 
       axios
         .post(
-          "http://localhost:3000/Payment/" + this.$route.params.username,
-          formdata
+          "http://localhost:3000/Payment",formdata,
+          {
+            headers: {
+              Authorization: `Bearer ${window.localStorage.getItem(
+                "accessToken"
+              )}`
+            }
+          }
         )
         .then(response => {
           console.log(response);
@@ -142,7 +156,11 @@ export default {
   },
   mounted() {
     axios
-      .get("http://localhost:3000/Payment/" + this.$route.params.username)
+      .get("http://localhost:3000/Payment", {
+        headers: {
+          Authorization: `Bearer ${window.localStorage.getItem("accessToken")}`
+        }
+      })
       .then(response => {
         this.data.BookID.allBookID = response.data.thisBookID;
         this.data.BookID.allPrice = response.data.thisPrice;

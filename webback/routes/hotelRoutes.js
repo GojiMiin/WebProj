@@ -17,7 +17,7 @@ module.exports = function(app){
         .delete(authenticateToken, user.deleteAUser)
         .post(authenticateToken, user.updateAUser)
 
-    app.route('/Payment')
+    app.route('/payment')
         .post(authenticateToken, payment.getInformation)
         .get(authenticateToken, payment.frontInformation)
 
