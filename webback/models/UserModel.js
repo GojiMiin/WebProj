@@ -21,7 +21,8 @@ var UserSchema = new Schema({
         default: Date.now
     },
     BookID: {
-        type: String
+        type: String,
+        default: ""
     }
 })
 

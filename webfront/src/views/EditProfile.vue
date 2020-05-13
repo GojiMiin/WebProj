@@ -22,6 +22,7 @@
               type="text"
               name="username"
               maxlength="12"
+              readonly
             />
             <span class="error" v-if="failed == true">
               <p>{{ errors[0] }}</p>
@@ -187,7 +188,11 @@
               type="file"
               name="ProfilePic"
               accept="image/*"
-              @change="getImage($event) || validate($event)"
+              @change="
+                getImage($event) ||
+                  validate($event) ||
+                  onFileChange(User.ProfilePic, $event)
+              "
             />
             <span v-if="errors[0]" class="error">
               <p>Please choose only jpeg or png file</p>
@@ -195,7 +200,7 @@
           </ValidationProvider>
         </div>
 
-        <img :src="'/profileimg/Autheris_image.jpeg'" />
+        <!-- <img :src="User.ProfilePic" /> -->
 
         <p>
           <button class="registerForm" type="submit">
@@ -204,7 +209,9 @@
         </p>
       </form>
     </ValidationObserver>
-    <router-link to="/"><button type="button">Back</button></router-link>
+    <router-link :to="{ path: '/' + User.username }"
+      ><button type="button">Back</button></router-link
+    >
   </div>
 </template>
 
@@ -231,15 +238,16 @@ export default {
       //Validate: true,
     };
   },
-  mounted() {
-    axios
-      .get("http://localhost:3000/auser/", {
+  async mounted() {
+    let x = await axios
+      .get("http://localhost:3000/auser", {
         headers: {
           Authorization: `Bearer ${window.localStorage.getItem("accessToken")}`,
         },
       })
       .then((res) => {
         //date format
+        console.log(res);
         var cdate = new Date(res.data.DoB);
         var year = cdate.getFullYear();
         var month = cdate.getMonth() + 1;
@@ -263,7 +271,7 @@ export default {
           tel: res.data.tel,
           ProfilePic: res.data.ProfilePic,
         };
-        console.log(this.User);
+        console.log(res.data);
       });
   },
   methods: {
@@ -275,7 +283,8 @@ export default {
       let datestr = new Date(this.User.DoB).toUTCString();
       let formdata = new FormData();
       formdata.append("username", this.User.username);
-      formdata.append("password", this.User.password);
+      formdata.append("oldpassword", this.User.oldpassword);
+      formdata.append("newpassword", this.User.newpassword);
       formdata.append("firstname", this.User.firstname);
       formdata.append("lastname", this.User.lastname);
       formdata.append("DoB", datestr);
@@ -286,11 +295,17 @@ export default {
       formdata.append("ProfilePic", this.User.ProfilePic);
 
       axios
-        .post("http://localhost:3000/users", formdata)
+        .post("http://localhost:3000/auser", formdata, {
+          headers: {
+            Authorization: `Bearer ${window.localStorage.getItem(
+              "accessToken"
+            )}`,
+          },
+        })
         .then((res) => {
           console.log(res);
           if (res.data.err) {
-            console.log("user already exist");
+            console.log("err");
           }
         })
         .catch((err) => {

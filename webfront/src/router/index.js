@@ -5,7 +5,12 @@ import Payment from "../views/Payment";
 import Register from "../views/Register";
 import HomeAfterLog from "../views/Home_afterlogin";
 import EditProfile from "../views/EditProfile";
+import allType from "../views/RoomType";
+import RoomDetail from "../views/RoomDetail";
+import Booking from "../views/Booking";
+import Vuex from "vuex";
 
+Vue.use(Vuex);
 Vue.use(VueRouter);
 
 import { ValidationProvider, ValidationObserver, extend } from "vee-validate";
@@ -28,9 +33,29 @@ let router = new VueRouter({
       component: Home
     },
     {
+      path: "/payment",
+      name: "Payment",
+      component: Payment
+    },
+    {
       path: "/register",
       name: "Register",
       component: Register
+    },
+    {
+      path: "/roomtype",
+      name: "allType",
+      component: allType
+    },
+    {
+      path: "/roomdetail",
+      name: "Room",
+      component: RoomDetail
+    },
+    {
+      path: "/booking",
+      name: "Booking",
+      component: Booking
     },
     {
       path: "/:username",
@@ -41,11 +66,6 @@ let router = new VueRouter({
       path: "/:username/edit",
       name: "EditProfile",
       component: EditProfile
-    },
-    {
-      path: "/payment",
-      name: "Payment",
-      component: Payment
     }
   ]
 });

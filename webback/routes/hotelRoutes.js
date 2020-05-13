@@ -22,19 +22,21 @@ module.exports = function(app){
         .get(authenticateToken, payment.frontInformation)
 
     app.route('/book')
-        .post(authenticateToken, book.sendBooking)
-        .get(authenticateToken, book.initPage)
+        .post(book.sendBooking)
+        .put(book.initPage)
 
     app.route('/bookhistory')
         .get(authenticateToken, bookHistory.getAll)
         .delete(authenticateToken, bookHistory.cancel)
 
-    app.route('/roomDetail/:type')
+    app.route('/roomdetail/:type')
         .get(roomDetail.getPrice)
+        .post(roomDetail.getRoom)
 
-    app.route('/PaymentInfo')
+    app.route('/paymentinfo')
         .get(authenticateToken, PaymentInfo.getAllPayment)
         .put(authenticateToken, PaymentInfo.updateStatus)
+
 }
 
 function authenticateToken(req, res, next) {

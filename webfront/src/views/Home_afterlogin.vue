@@ -6,7 +6,7 @@
 
 <script>
 import AfterLogin from "../components/AfterLog";
- 
+
 export default {
   name: "homeafterlog",
   components: {

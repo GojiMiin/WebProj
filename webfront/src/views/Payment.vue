@@ -103,6 +103,7 @@ export default {
       this.sentData();
     },
     sentData: function() {
+      console.log(typeof(this.data.payData.PayDate))
       alert("Submit Success");
       let datestr = new Date(this.data.payData.PayDate).toUTCString();
       let formdata = new FormData();
@@ -116,16 +117,13 @@ export default {
       }
 
       axios
-        .post(
-          "http://localhost:3000/Payment",formdata,
-          {
-            headers: {
-              Authorization: `Bearer ${window.localStorage.getItem(
-                "accessToken"
-              )}`
-            }
+        .post("http://localhost:3000/Payment", formdata, {
+          headers: {
+            Authorization: `Bearer ${window.localStorage.getItem(
+              "accessToken"
+            )}`
           }
-        )
+        })
         .then(response => {
           console.log(response);
         })

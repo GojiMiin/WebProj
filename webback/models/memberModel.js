@@ -27,6 +27,9 @@ var MemberSchema = new Schema({
     },
     ProfilePic: {
         type: String
+    },
+    email: {
+        type: String
     }
 })
 

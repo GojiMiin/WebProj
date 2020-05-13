@@ -36,7 +36,15 @@ exports.sendBooking = async function(req, res) {
 }
 
 exports.initPage = async function(req, res) {
-    //send all book data from server to front 
+    let matchBook = []
+
     let allItems = await book.find({})
-    res.send(allItems)
+    for(i in req.body){
+        let matchData = allItems.filter((room)=>{
+            return room.roomNum == req.body[i].roomNum
+        })
+        matchBook[i] = matchData[0]
+    }
+    res.send(matchBook)
+
 }
