@@ -1,27 +1,66 @@
 import Vue from "vue";
+import Vuex from "vuex";
+import VCalendar from "v-calendar";
 import VueRouter from "vue-router";
 import Home from "../views/Home.vue";
 import Payment from "../views/Payment";
+import Contact from "../views/Contact";
 import Register from "../views/Register";
-import HomeAfterLog from "../views/Home_afterlogin";
-import EditProfile from "../views/EditProfile";
-import allType from "../views/RoomType";
-import RoomDetail from "../views/RoomDetail";
+import HomeAfterLog from "../views/Home_afterLog";
+import RoomType from "../views/RoomType";
+import RoomDetail_Deluxe from "../views/Roomdetail_Deluxe";
+import RoomDetail_Premium from "../views/Roomdetail_Premium";
+import RoomDetail_Suite from "../views/Roomdetail_Suite";
 import Booking from "../views/Booking";
-import Vuex from "vuex";
+import Profile from "../views/Profile";
+import { ValidationProvider, ValidationObserver, extend } from "vee-validate";
+import {
+  required,
+  email,
+  alpha,
+  alpha_dash,
+  numeric,
+  ext
+} from "vee-validate/dist/rules";
 
 Vue.use(Vuex);
 Vue.use(VueRouter);
-
-import { ValidationProvider, ValidationObserver, extend } from "vee-validate";
-import * as rules from "vee-validate/dist/rules";
+Vue.use(VCalendar, {
+  componentPrefix: "vc"
+});
 
 Vue.component("ValidationObserver", ValidationObserver);
 Vue.component("ValidationProvider", ValidationProvider);
-Vue.use(VueRouter);
 
-Object.keys(rules).forEach(rule => {
-  extend(rule, rules[rule]);
+extend("email", email);
+extend("required", {
+  ...required,
+  message: "{_field_} can not be empty"
+});
+
+extend("alpha", {
+  ...alpha,
+  message: "{_field_} can only contain letters"
+});
+
+extend("alpha_dash", {
+  ...alpha_dash,
+  message: "{_field_} can only contain letters and numbers"
+});
+
+extend("email", {
+  ...email,
+  message: "{_field_} can only contain email"
+});
+
+extend("numeric", {
+  ...numeric,
+  message: "{_field_} can only contain numbers"
+});
+
+extend("ext", {
+  ...ext,
+  message: "{_field_} can only contain valid file"
 });
 
 let router = new VueRouter({
@@ -31,6 +70,16 @@ let router = new VueRouter({
       path: "/",
       name: "Home",
       component: Home
+    },
+    {
+      path: "/afterlog",
+      name: "HomeAfterLog",
+      component: HomeAfterLog
+    },
+    {
+      path: "/contact",
+      name: "Contact",
+      component: Contact
     },
     {
       path: "/payment",
@@ -43,14 +92,9 @@ let router = new VueRouter({
       component: Register
     },
     {
-      path: "/roomtype",
-      name: "allType",
-      component: allType
-    },
-    {
-      path: "/roomdetail",
-      name: "Room",
-      component: RoomDetail
+      path: "/profile",
+      name: "Profile",
+      component: Profile
     },
     {
       path: "/booking",
@@ -58,19 +102,29 @@ let router = new VueRouter({
       component: Booking
     },
     {
-      path: "/:username",
-      name: "HomeAfterLog",
-      component: HomeAfterLog
+      path: "/roomtype",
+      name: "Room",
+      component: RoomType
     },
     {
-      path: "/:username/edit",
-      name: "EditProfile",
-      component: EditProfile
+      path: "/roomdetail/deluxe",
+      name: "RoomDetail_Deluxe",
+      component: RoomDetail_Deluxe
+    },
+    {
+      path: "/roomdetail/premium",
+      name: "RoomDetail_Premium",
+      component: RoomDetail_Premium
+    },
+    {
+      path: "/roomdetail/suite",
+      name: "RoomDetail_Suite",
+      component: RoomDetail_Suite
     }
   ]
 });
 
-const openRoutes = ["Home", "Register"];
+const openRoutes = ["Home", "Register", "Contact"];
 
 router.beforeEach((to, from, next) => {
   if (openRoutes.includes(to.name)) {

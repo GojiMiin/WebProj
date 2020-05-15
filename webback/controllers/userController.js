@@ -1,7 +1,7 @@
 var mongoose = require('mongoose')
-var formidable = require('formidable')
-var bcrypt = require('bcrypt')
-var fs = require('fs')
+var formidable = require('formidable') //user for form-data
+var bcrypt = require('bcrypt') // for hash password into database
+var fs = require('fs') // for read, copy and delete file
 User = mongoose.model('Users')
 Member = mongoose.model('Member')
 
@@ -9,42 +9,58 @@ exports.listAllUsers = function (req, res) {
     var query = { sort: { firstName: 1 } }
     User.find({}, null, query, function (err, user) {
         if (err) throw err
-        //console.log(user)
         res.json(user)
     })
 }
 
 exports.createAUser = async function (req, res) {
-    //console.log(req)
+    //initialize form upload folder
     var form = new formidable.IncomingForm({
         uploadDir: process.cwd() + '/tmp',
         keepExtensions: true
     });
-
+    //Parse form into files and fields
     form.parse(req, async (err, fields, files) => {
-        //console.log(fields)
         if (err) {
             next(err);
             return;
         }
+        //Check username exist 
         const CheckUser = await User.findOne({ username: fields.username })
-        if (CheckUser) {
+        if (CheckUser) { //If exist send error back to front
             res.sendStatus(403).json({ err: "user already exist" })
         } else {
-            //get type of file for rename
+            //generate salt
             const salt = await bcrypt.genSalt()
+            //hash password after attach salt into password
             const hashedPassword = await bcrypt.hash(fields.password, salt)
+            
+            let useForRename = []
+            //if user didn't choose ProfilePicture
+            if (files.ProfilePic === undefined) {
 
-            let type = files.ProfilePic.type
-            let useForRename = type.split("/")
-            //change type of old path to string
-            let tempPath = files.ProfilePic.path
-            let newPath = "../webfront/public/profileimg/" + fields.username + "_image" + "." + useForRename[1]
-            //rename image file
-            fs.rename(tempPath, newPath, (err, status) => {
-                if (err) throw err
-            })
-            //generate paymentID
+                let type = 'image/jpeg'
+                let tempPath = process.cwd() + '/tmp/default.jpg'
+                useForRename = type.split("/")
+                let newPath = "../webfront/public/profileimg/" + fields.username + "_image" + "." + useForRename[1]
+                fs.copyFile(tempPath, newPath, (err, status) => {
+                    if (err) throw err
+                })
+            }
+            //if user choose ProfilePicture
+            else {           
+                let type = files.ProfilePic.type
+                useForRename = type.split("/")
+                //Change type of old path to string
+                let tempPath = files.ProfilePic.path
+                let newPath = "../webfront/public/profileimg/" + fields.username + "_image" + "." + useForRename[1]
+                //Rename image file
+                fs.rename(tempPath, newPath, (err, status) => {
+                    if (err) throw err
+                })
+            }
+            
+            //Generate paymentID
             let memberID = ''
             let count = await User.countDocuments()
             if (count == 0) {
@@ -57,14 +73,14 @@ exports.createAUser = async function (req, res) {
                 }
                 memberID = 'M' + myID
             }
-
+            //Create userdata Object
             let userdata = {
                 username: fields.username,
                 password: hashedPassword,
                 memberID: memberID
             };
-            await User.create(userdata)
-
+            await User.create(userdata) //Create userdata into database
+            //Create memberdata Object
             let memberdata = {
                 username: fields.username,
                 firstname: fields.firstname,
@@ -76,8 +92,7 @@ exports.createAUser = async function (req, res) {
                 tel: fields.tel,
                 ProfilePic: '/profileimg/' + fields.username + "_image" + "." + useForRename[1]
             };
-            //console.log(memberdata)
-            await Member.create(memberdata)
+            await Member.create(memberdata) //Create memberdata into database
         }
     });
 
@@ -85,9 +100,9 @@ exports.createAUser = async function (req, res) {
 }
 
 exports.readAUser = async function (req, res) {
-    //console.log(req)
+    //Find User by using username
     const Memberdata = await Member.findOne({ username: req.user.username })
-    console.log(Memberdata)
+    //Send all information back
     res.json({
         username: Memberdata.username,
         firstname: Memberdata.firstname,
@@ -102,7 +117,6 @@ exports.readAUser = async function (req, res) {
 }
 
 exports.deleteAUser = function (req, res) {
-    //console.log(req.params.userId)
     User.findOneAndRemove(req.user.username, function (err, user) {
         if (err) throw err
         const response = {
@@ -114,51 +128,62 @@ exports.deleteAUser = function (req, res) {
 }
 
 exports.updateAUser = async function (req, res) {
-    //console.log(req.params.userId)
+    //initialize form upload folder 
     var form = new formidable.IncomingForm({
         uploadDir: process.cwd() + '/tmp',
         keepExtensions: true
     });
+    //Parse form into files and fields
     form.parse(req, async (err, fields, files) => {
         if (err) {
             next(err);
             return;
         }
-        //console.log(fields);
+        //Find Userdata by using username
         const CheckUser = await User.findOne({ username: req.user.username })
+        //Find Memberdata by using username
         const CheckMember = await Member.findOne({ username: req.user.username })
+        //if both exists
         if (CheckUser && CheckMember) {
+            //Check Old password is match or not
             if (await bcrypt.compare(fields.oldpassword, CheckUser.password)) {
-
-                let oldtype = CheckMember.ProfilePic
-                let getOldType = oldtype.split(".")
-                let oldPath = "../webfront/public/profileimg/" + fields.username + "_image" + "." + getOldType[1]
-                fs.unlink(oldPath, (err) => {
-                    if (err) {
+                //if Match
+                let useForRename = []
+                //if User didn't change ProfilePicture
+                if (files.ProfilePic == undefined) {
+                    useForRename = CheckMember.ProfilePic.split(".")
+                }
+                //if User change ProfilePicture
+                else {
+                    let oldtype = CheckMember.ProfilePic
+                    let getOldType = oldtype.split(".")
+                    let oldPath = "../webfront/public/profileimg/" + fields.username + "_image" + "." + getOldType[1]
+                    //Delete Old picture image
+                    fs.unlink(oldPath, (err) => {
+                        if (err) {
                         console.error(err)
                         return
-                    }
-                })
+                        }
+                    })
 
-                let type = files.ProfilePic.type
-                let useForRename = type.split("/")
-                //change type of old path to string
-                let tempPath = files.ProfilePic.path
-                let newPath = "../webfront/public/profileimg/" + fields.username + "_image" + "." + useForRename[1]
-                //rename image file
-                fs.rename(tempPath, newPath, (err, status) => {
-                    if (err) throw err
-                })
-
-
+                    let type = files.ProfilePic.type
+                    useForRename = type.split("/")
+                    //Change type of old path to string
+                    let tempPath = files.ProfilePic.path
+                    let newPath = "../webfront/public/profileimg/" + fields.username + "_image" + "." + useForRename[1]
+                    //Rename image file
+                    fs.rename(tempPath, newPath, (err, status) => {
+                       if (err) throw err
+                    })
+                }
                 const salt = await bcrypt.genSalt()
                 const hashedPassword = await bcrypt.hash(fields.newpassword, salt)
 
                 let userdata = {
                     username: fields.username,
                     password: hashedPassword,
-                    //memberID: memberID
                 };
+                //Update Userdata
                 User.findOneAndUpdate({ username: req.user.username }, userdata, { new: true }, (err, user) => {
                     if (err) throw err
                     console.log(user)
@@ -174,13 +199,15 @@ exports.updateAUser = async function (req, res) {
                     tel: fields.tel,
                     ProfilePic: '/profileimg/' + fields.username + "_image" + "." + useForRename[1]
                 };
+                //Update Memberdata
                 Member.findOneAndUpdate({ username: req.user.username }, memberdata, { new: true }, (err, user) => {
                     if (err) throw err
                     console.log(user)
                 })
-
+                res.json({ data: "password correct"})
 
             }
+            //if Password didn't match
             else {
                 res.json({ err: "password incorrect" })
                 let bin = files.ProfilePic.path
@@ -191,20 +218,9 @@ exports.updateAUser = async function (req, res) {
                     }
                 })
             }
+        //if anything goes wrong..  
         } else {
             res.sendStatus(500)
         }
     })
-
-
-
-
-    //var newUser = {}
-    //newUser = req.body
-    //console.log(newUser)
-    /* User.findOneAndUpdate({ username: req.user.username }, newUser, { new: true }, function (err, user) {
-        if (err) throw err
-        console.log(user)
-        res.json(user)
-    }) */
 }

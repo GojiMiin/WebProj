@@ -1,199 +1,221 @@
 <template>
-  <div id="register">
-    <h1>
-      Register
-    </h1>
-    <ValidationObserver v-slot="{ handleSubmit }">
-      <form
-        class="registerForm"
-        enctype="multipart/form-data"
-        @submit.prevent="handleSubmit(addToAPI)"
-        error
-      >
-        <div class="registerForm">
-          <label for="username">Username<br /></label>
-          <ValidationProvider
-            rules="required|alpha_dash"
-            v-slot="{ errors, failed }"
-          >
-            <input
-              id="username"
-              v-model="User.username"
-              type="text"
-              name="username"
-              maxlength="12"
-            />
-            <span class="error" v-if="failed == true">
-              <p>{{ errors[0] }}</p>
-            </span>
-          </ValidationProvider>
-        </div>
+  <div class="register">
+    <Menubar />
+    <v-img :src="require('@/assets/BG.jpg')">
+      <ValidationObserver ref="observer" v-slot="{}">
+        <v-form pl-10 ml-0 enctype="multipart/form-data">
+          <v-container class="base">
+            <v-container>
+              <v-subheader class="display-1 font-weight-bold"
+                >Register</v-subheader
+              >
+            </v-container>
+            <v-row>
+              <v-col cols="12" md="6">
+                <ValidationProvider
+                  mode="eager"
+                  v-slot="{ errors }"
+                  name="Username"
+                  rules="required|alpha"
+                >
+                  <v-text-field
+                    label="Username"
+                    placeholder="Username"
+                    v-model="User.username"
+                    filled
+                    :error-messages="errors"
+                  ></v-text-field>
+                </ValidationProvider>
+              </v-col>
 
-        <div class="registerForm">
-          <label for="password">Password<br /></label>
-          <ValidationProvider
-            rules="required|alpha_dash"
-            v-slot="{ errors, failed }"
-          >
-            <input
-              id="password"
-              v-model="User.password"
-              type="password"
-              name="password"
-              maxlength="12"
-            />
-            <span class="error" v-if="failed == true">
-              <p>{{ errors[0] }}</p>
-            </span>
-          </ValidationProvider>
-        </div>
+              <v-col cols="12" md="6">
+                <ValidationProvider
+                  mode="eager"
+                  v-slot="{ errors }"
+                  name="Password"
+                  rules="required|alpha_dash"
+                >
+                  <v-text-field
+                    label="Password"
+                    placeholder="Password"
+                    filled
+                    v-model="User.password"
+                    :append-icon="showpassword ? 'mdi-eye' : 'mdi-eye-off'"
+                    :type="showpassword ? 'text' : 'password'"
+                    :error-messages="errors"
+                    @click:append="showpassword = !showpassword"
+                  ></v-text-field>
+                </ValidationProvider>
+              </v-col>
 
-        <div class="registerForm">
-          <label for="firstname">First name<br /></label>
-          <ValidationProvider
-            rules="required|alpha"
-            v-slot="{ errors, failed }"
-          >
-            <input
-              id="firstname"
-              v-model="User.firstname"
-              type="text"
-              name="firstname"
-              maxlength="15"
-            />
-            <span class="error" v-if="failed == true">
-              <p>{{ errors[0] }}</p>
-            </span>
-          </ValidationProvider>
-        </div>
+              <v-col cols="12" md="6">
+                <ValidationProvider
+                  mode="eager"
+                  v-slot="{ errors }"
+                  name="Firstname"
+                  rules="required|alpha"
+                >
+                  <v-text-field
+                    label="Firstname"
+                    placeholder="Firstname"
+                    v-model="User.firstname"
+                    :error-messages="errors"
+                    filled
+                  ></v-text-field>
+                </ValidationProvider>
+              </v-col>
 
-        <div class="registerForm">
-          <label for="lastname">Last name<br /></label>
-          <ValidationProvider
-            rules="required|alpha"
-            v-slot="{ errors, failed }"
-          >
-            <input
-              id="lastname"
-              v-model="User.lastname"
-              type="text"
-              name="lastname"
-              maxlength="15"
-            />
-            <span class="error" v-if="failed == true">
-              <p>{{ errors[0] }}</p>
-            </span>
-          </ValidationProvider>
-        </div>
+              <v-col cols="12" md="6">
+                <ValidationProvider
+                  mode="eager"
+                  v-slot="{ errors }"
+                  name="Lastname"
+                  rules="required|alpha"
+                >
+                  <v-text-field
+                    label="Lastname"
+                    placeholder="Lastname"
+                    v-model="User.lastname"
+                    :error-messages="errors"
+                    filled
+                  ></v-text-field>
+                </ValidationProvider>
+              </v-col>
 
-        <div class="registerForm">
-          <label for="DoB">Date of Birth<br /></label>
-          <ValidationProvider rules="required" v-slot="{ errors, failed }">
-            <input id="DoB" v-model="User.DoB" type="date" name="DoB" />
-            <span class="error" v-if="failed == true">
-              <p>{{ errors[0] }}</p>
-            </span>
-          </ValidationProvider>
-        </div>
+              <v-col cols="12">
+                <ValidationProvider
+                  mode="eager"
+                  v-slot="{ errors }"
+                  name="Date"
+                  rules="required"
+                >
+                  <v-date-picker
+                    v-model="User.DoB"
+                    color="blue-grey lighten-3"
+                  ></v-date-picker>
+                  <v-text-field
+                    v-model="User.DoB"
+                    :error-messages="errors"
+                    readonly
+                  ></v-text-field>
+                </ValidationProvider>
+              </v-col>
 
-        <div class="registerForm">
-          <h4>Gender</h4>
-          <label for="male">Male</label>
-          <ValidationProvider rules="required" v-slot="{ errors, failed }">
-            <input
-              id="male"
-              v-model="User.gender"
-              type="radio"
-              name="gender"
-              value="male"
-            />
-            <label for="female">Female</label>
-            <input
-              id="female"
-              v-model="User.gender"
-              type="radio"
-              name="gender"
-              value="female"
-            />
-            <span class="error" v-if="failed == true">
-              <p>{{ errors[0] }}</p>
-            </span>
-          </ValidationProvider>
-        </div>
+              <v-col cols="12" md="6">
+                <ValidationProvider
+                  mode="eager"
+                  v-slot="{ errors }"
+                  name="Gender"
+                  rules="required"
+                >
+                  <v-select
+                    v-model="User.gender"
+                    :items="genders"
+                    label="Gender"
+                    placeholder="Gender"
+                    :error-messages="errors"
+                    filled
+                  ></v-select>
+                </ValidationProvider>
+              </v-col>
 
-        <div class="registerForm">
-          <label for="address">Address<br /></label>
-          <ValidationProvider rules="required" v-slot="{ errors, failed }">
-            <input
-              id="address"
-              v-model="User.address"
-              type="text"
-              name="address"
-            />
-            <span class="error" v-if="failed == true">
-              <p>{{ errors[0] }}</p>
-            </span>
-          </ValidationProvider>
-        </div>
+              <v-col cols="12">
+                <ValidationProvider
+                  mode="eager"
+                  v-slot="{ errors }"
+                  name="Address"
+                  rules="required"
+                >
+                  <v-text-field
+                    v-model="User.address"
+                    label="Address"
+                    placeholder="Address"
+                    :error-messages="errors"
+                    filled
+                  ></v-text-field>
+                </ValidationProvider>
+              </v-col>
 
-        <div class="registerForm">
-          <ValidationProvider
-            rules="required|numeric"
-            v-slot="{ errors, failed }"
-          >
-            <label for="tel">Phone<br /></label>
-            <input id="tel" v-model="User.tel" type="text" name="tel" />
-            <span class="error" v-if="failed == true">
-              <p>{{ errors[0] }}</p>
-            </span>
-          </ValidationProvider>
-        </div>
+              <v-col cols="12" md="6">
+                <ValidationProvider
+                  mode="eager"
+                  v-slot="{ errors }"
+                  name="Email"
+                  rules="required|email"
+                >
+                  <v-text-field
+                    v-model="User.email"
+                    label="Email"
+                    placeholder="Email"
+                    :error-messages="errors"
+                    filled
+                  >
+                  </v-text-field>
+                </ValidationProvider>
+              </v-col>
 
-        <div class="registerForm">
-          <ValidationProvider rules="email" v-slot="{ errors, failed }">
-            <label for="email">Email<br /></label>
-            <input id="email" v-model="User.email" type="text" name="email" />
-            <span class="error" v-if="failed == true">
-              <p>{{ errors[0] }}</p>
-            </span>
-          </ValidationProvider>
-        </div>
+              <v-col cols="12" md="6">
+                <ValidationProvider
+                  mode="eager"
+                  v-slot="{ errors }"
+                  name="Tel"
+                  rules="required|numeric"
+                >
+                  <v-text-field
+                    v-model="User.tel"
+                    label="Tel"
+                    placeholder="Phone Number"
+                    :error-messages="errors"
+                    filled
+                  ></v-text-field>
+                </ValidationProvider>
+              </v-col>
 
-        <div class="registerForm">
-          <ValidationProvider
-            rules="ext:jpg,pdf,png"
-            v-slot="{ errors, validate }"
-          >
-            <input
-              type="file"
-              name="ProfilePic"
-              accept="image/*"
-              @change="getImage($event) || validate($event)"
-            />
-            <span v-if="errors[0]" class="error">
-              <p>Please choose only jpeg or png file</p>
-            </span>
-          </ValidationProvider>
-        </div>
-
-        <p>
-          <button class="registerForm" type="submit">
-            submit
-          </button>
-        </p>
-      </form>
-    </ValidationObserver>
-    <router-link to="/"><button type="button">Back</button></router-link>
+              <v-col cols="12">
+                <ValidationProvider
+                  mode="eager"
+                  v-slot="{ errors }"
+                  name="Avatar"
+                  rules="ext:jpg,pdf,png"
+                >
+                  <v-file-input
+                    v-model="User.ProfilePic"
+                    accept="image/png, image/jpeg, image/bmp"
+                    placeholder="Pick an avatar"
+                    prepend-icon="mdi-camera"
+                    label="Avatar"
+                    :error-messages="errors"
+                    hint="File type: png/jpeg/bmp"
+                    filled
+                  ></v-file-input>
+                </ValidationProvider>
+              </v-col>
+            </v-row>
+            <div class="my-2">
+              <v-btn large color="primary" @click="submit">Submit</v-btn>
+            </div>
+            <div>
+              <v-btn large @click="clear">Clear</v-btn>
+            </div>
+          </v-container>
+        </v-form>
+      </ValidationObserver>
+    </v-img>
   </div>
 </template>
 
 <script>
-/* eslint-disable */
-import axios from "axios";
+import Menubar from "../components/menubar";
+import store from "../Store/store";
 export default {
   name: "Register",
+  components: {
+    Menubar
+  },
   data() {
     return {
+      showpassword: false,
+      genders: ["Male", "Female"],
       User: {
         username: "",
         password: "",
@@ -204,17 +226,13 @@ export default {
         address: "",
         email: "",
         tel: "",
-        ProfilePic: "",
-      },
-      //Validate: true,
+        ProfilePic: []
+      }
     };
   },
   methods: {
-    addToAPI(e) {
-      /* if (this.Validate === false) {
-        alert("Img invalid");
-      } else { */
-      alert("Success");
+    submit() {
+      this.$refs.observer.validate();
       let datestr = new Date(this.User.DoB).toUTCString();
       let formdata = new FormData();
       formdata.append("username", this.User.username);
@@ -227,27 +245,35 @@ export default {
       formdata.append("email", this.User.email);
       formdata.append("tel", this.User.tel);
       formdata.append("ProfilePic", this.User.ProfilePic);
-
-      axios
-        .post("http://localhost:3000/users", formdata)
-        .then((res) => {
-          console.log(res);
-          if (res.data.err) {
-            console.log("user already exist");
-          }
+      //send register formdata to Vuex store
+      store
+        .dispatch("register", formdata)
+        .then(() => {
+          this.$router.push({ path: "/afterlog" });
         })
-        .catch((err) => {
-          console.log(err);
-        });
-      /* } */
+        .catch(err => console.log(err));
+      this.$router.push({ path: "/" });
     },
-    getImage(event) {
-      let file = event.target.files[0];
-      this.User.ProfilePic = file;
-    },
-  },
-  component: {},
+    //clear all data on page
+    clear() {
+      this.$refs.observer.reset();
+      this.User.username = "";
+      this.User.password = "";
+      this.User.firstname = "";
+      this.User.lastname = "";
+      this.User.DoB = "";
+      this.User.gender = "";
+      this.User.address = "";
+      this.User.email = "";
+      this.User.tel = "";
+      this.User.ProfilePic = null;
+    }
+  }
 };
 </script>
 
-<style></style>
+<style scoped>
+.container.base {
+  width: 70%;
+}
+</style>

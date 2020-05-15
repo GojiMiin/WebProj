@@ -20,6 +20,9 @@ var bookSchema = new Schema({
     roomNum: {
         type: Number
     },
+    roomType: {
+        type: String
+    }
 })
 
 module.exports = mongoose.model('Book', bookSchema, 'Book')

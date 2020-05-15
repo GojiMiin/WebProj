@@ -14,7 +14,6 @@ var paySchema = new Schema({
     Bank: {
         type: String
     },
-    PaymentStatus: "",
     PaymentImg: {
         type: String
     },

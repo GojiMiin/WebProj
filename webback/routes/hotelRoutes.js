@@ -1,12 +1,12 @@
 require('dotenv').config()
 var jwt = require('jsonwebtoken')
 
+//All route here
 module.exports = function(app){
     var payment = require('../controllers/paymentController')
     var book = require('../controllers/bookController')
     var bookHistory = require('../controllers/bookingHistoryController')
     var roomDetail = require('../controllers/roomDetailController')
-    var PaymentInfo = require('../controllers/adminPaymentController')
     var user = require('../controllers/userController')
     app.route('/users')
         .get(user.listAllUsers)
@@ -22,30 +22,25 @@ module.exports = function(app){
         .get(authenticateToken, payment.frontInformation)
 
     app.route('/book')
-        .post(book.sendBooking)
-        .put(book.initPage)
+        .post(authenticateToken,book.sendBooking)
+        .put(authenticateToken,book.initPage)
 
     app.route('/bookhistory')
         .get(authenticateToken, bookHistory.getAll)
-        .delete(authenticateToken, bookHistory.cancel)
 
     app.route('/roomdetail/:type')
         .get(roomDetail.getPrice)
         .post(roomDetail.getRoom)
 
-    app.route('/paymentinfo')
-        .get(authenticateToken, PaymentInfo.getAllPayment)
-        .put(authenticateToken, PaymentInfo.updateStatus)
-
 }
 
+//Use for authenticate Each route
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization']
     const token = authHeader && authHeader.split(' ')[1]
     if (token == null) return res.sendStatus(401)
 
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-        //console.log(err)
         if (err) return res.sendStatus(403)
         req.user = user
         next()

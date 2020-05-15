@@ -1,16 +1,22 @@
 <template>
   <div class="home">
-    <Login />
+    <Menubar />
+    <v-img :src="require('@/assets/BG.jpg')"> </v-img>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import Login from "../components/Login";
+import Menubar from "../components/menubar";
 export default {
   name: "Home",
   components: {
-    Login
+    Menubar
   }
 };
 </script>
+
+<style scoped>
+.v-text-field {
+  width: 10%;
+}
+</style>

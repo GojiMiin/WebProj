@@ -12,21 +12,13 @@ book = mongoose.model('Book')
 
 app.use(body.json());
 
-exports.sendList = function (req, res) {
-    var items = ''
-    users.findOne(req.body.usename, function (err, res) {
-        if (err) throw err
-        items = res.BookID.split(',')
-        console.log(items)
-    })
-}
-
+//prepare data and send to database
 exports.getInformation = function (req, res) {
 
     var form = new formidable.IncomingForm();
     form.uploadDir = 'uploads';
     form.keepExtensions = true;
-
+    //handle formdata from front end
     form.parse(req, async (err, fields, files) => {
         if (err) {
           next(err);
@@ -70,6 +62,7 @@ exports.getInformation = function (req, res) {
     });
 }
 
+//send data for setup payment page
 exports.frontInformation = async function (req, res) {
     let readyToSendPrice = []
     let readyToSendID = []
@@ -83,7 +76,7 @@ exports.frontInformation = async function (req, res) {
 
     let userRaw = await users.findOne(want)
     let allBookID = userRaw.BookID.split(",")
-
+    
     for(let i in allBookID){
         let eachID = {
             BookID : allBookID[i]

@@ -5,6 +5,7 @@ var app = express();
 roomType = mongoose.model('roomType')
 room = mongoose.model('Room')
 
+//send price for setup room detail page
 exports.getPrice = async function(req, res) {
     let type = {
         TypeName: req.params.type
@@ -13,6 +14,7 @@ exports.getPrice = async function(req, res) {
     res.send(allDetail)
 }
 
+//get all room number in type
 exports.getRoom = async function(req, res) {
     let type = {
         TypeName: req.params.type
